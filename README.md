@@ -34,6 +34,14 @@ scripted path uses Chrome for Testing (CfT), which keeps it:
    HN rows culled (with real counts and titles).
 4. Expect "INSTALL TEST PASSED".
 
+## Tests
+- Browser-free canonical suite:  node test/verify.js
+  (heuristics units + manifest/syntax/popup-wiring/storage-split integrity)
+- Browser suites (need CfT running, see above):
+  node test/install-test.js        injection -> filters -> culling on HN
+  node test/popup-test.js          killfile add/remove in the real popup
+  node test/killfile-e2e-test.js   killfile entry -> posts culled after reload
+
 ## Structure
   manifest.json          MV3 manifest
   src/heuristics.js      pure scoring engine (unit-tested, no browser APIs)
