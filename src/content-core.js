@@ -1,5 +1,10 @@
 /* FeedCull core: settings + decision pipeline shared by all site adapters.
- * Storage: chrome.storage.sync (killfiles, topics, sensitivity, per-site).
+ * Storage split (important):
+ *   - chrome.storage.SYNC: settings that should follow the user across
+ *     devices (enabledSites, sensitivity, killDomains, killAuthors,
+ *     topicKeywords). Sync quota is tight (120 writes/min), so...
+ *   - chrome.storage.LOCAL: high-frequency counters (culledToday). Local
+ *     quota is ~1.8M writes/min — safe for per-post counting.
  * Decision order: site disabled? -> killfile/topic match (always cull)
  * -> heuristic score vs sensitivity. User holds the lever at every step.
  */
@@ -15,22 +20,28 @@
     sensitivity: "med",
     killDomains: [],
     killAuthors: [],
-    topicKeywords: [],
-    culledToday: 0,
-    lastReset: ""
+    topicKeywords: []
   };
+
+  var LOCAL_DEFAULTS = { culledToday: 0, lastReset: "" };
 
   function today() {
     return new Date().toISOString().slice(0, 10);
   }
 
   function getSettings() {
-    return chrome.storage.sync.get(DEFAULTS).then(function (s) {
-      if (s.lastReset !== today()) {
-        s.culledToday = 0;
-        s.lastReset = today();
-        chrome.storage.sync.set({ culledToday: 0, lastReset: today() });
+    return Promise.all([
+      chrome.storage.sync.get(DEFAULTS),
+      chrome.storage.local.get(LOCAL_DEFAULTS)
+    ]).then(function (parts) {
+      var s = parts[0];
+      var local = parts[1];
+      if (local.lastReset !== today()) {
+        local.culledToday = 0;
+        local.lastReset = today();
+        chrome.storage.local.set({ culledToday: 0, lastReset: today() });
       }
+      s.culledToday = local.culledToday;
       return s;
     });
   }
@@ -79,10 +90,10 @@
   }
 
   function bumpCount() {
-    chrome.storage.sync.get(DEFAULTS, function (s) {
-      chrome.storage.sync.set({
+    chrome.storage.local.get(LOCAL_DEFAULTS, function (s) {
+      chrome.storage.local.set({
         culledToday: (s.culledToday || 0) + 1,
-        lastReset: today()
+        lastReset: s.lastReset || today()
       });
     });
   }

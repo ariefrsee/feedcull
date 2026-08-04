@@ -125,7 +125,11 @@ async function waitForTarget(urlPart, ms = 15000) {
   const p = await attach(popup.webSocketDebuggerUrl);
   await sleep(500);
 
-  /* 4. drive the UI: add a domain killfile */
+  /* --- 0. clean slate (sync + local) so the run is deterministic --- */
+  await evaluate(p, `(async () => { await chrome.storage.sync.clear(); await chrome.storage.local.clear(); })()`);
+  await sleep(300);
+
+  /* 1. drive the UI: add a domain killfile */
   await evaluate(p, `(() => {
     const input = document.getElementById('newDomain');
     input.value = 'spam.example.com';

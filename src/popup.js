@@ -1,26 +1,47 @@
 /* FeedCull popup v2 — killfile management lives here, no other tab needed.
- * Storage-backed: reads/writes chrome.storage.sync, same keys the content
- * scripts read, so changes apply on the next page load (or the reload
- * button applies them now).
+ * Storage split mirrors content-core: settings in sync, counters in local.
+ * Every write checks chrome.runtime.lastError — silent failures used to
+ * lose killfiles (sync write quota); never swallow the error again.
  */
 (function () {
   'use strict';
 
   var DEFAULTS = {
     enabledSites: {}, sensitivity: 'med', killDomains: [], killAuthors: [],
-    culledToday: 0, lastReset: ''
+    topicKeywords: []
   };
+  var LOCAL_DEFAULTS = { culledToday: 0, lastReset: '' };
 
   function today() { return new Date().toISOString().slice(0, 10); }
 
-  function getSettings(cb) {
-    chrome.storage.sync.get(DEFAULTS, function (s) {
-      if (s.lastReset !== today()) {
-        s.culledToday = 0;
-        s.lastReset = today();
-        chrome.storage.sync.set({ culledToday: 0, lastReset: today() });
+  function getSettings() {
+    return Promise.all([
+      chrome.storage.sync.get(DEFAULTS),
+      chrome.storage.local.get(LOCAL_DEFAULTS)
+    ]).then(function (parts) {
+      var s = parts[0];
+      var local = parts[1];
+      if (local.lastReset !== today()) {
+        local.culledToday = 0;
+        local.lastReset = today();
+        chrome.storage.local.set({ culledToday: 0, lastReset: today() });
       }
-      cb(s);
+      s.culledToday = local.culledToday;
+      return s;
+    });
+  }
+
+  function write(obj) {
+    return new Promise(function (resolve) {
+      chrome.storage.sync.set(obj, function () {
+        if (chrome.runtime.lastError) {
+          document.getElementById('stat').innerHTML =
+            '<b style="color:#e5484d">Save failed:</b> ' + chrome.runtime.lastError.message;
+          resolve(false);
+          return;
+        }
+        resolve(true);
+      });
     });
   }
 
@@ -55,16 +76,16 @@
       x.textContent = 'x';
       x.title = 'Remove ' + it.value;
       x.addEventListener('click', function () {
-        getSettings(function (cur) {
+        getSettings().then(function (cur) {
+          var set = {};
           if (it.kind === 'domain') {
             cur.killDomains = cur.killDomains.filter(function (d) { return d !== it.value; });
+            set.killDomains = cur.killDomains;
           } else {
             cur.killAuthors = cur.killAuthors.filter(function (a) { return a !== it.value; });
+            set.killAuthors = cur.killAuthors;
           }
-          chrome.storage.sync.set({
-            killDomains: cur.killDomains,
-            killAuthors: cur.killAuthors
-          }, function () { renderKillList(cur); });
+          write(set).then(function (ok) { if (ok) renderKillList(cur); });
         });
       });
       li.appendChild(kind);
@@ -79,13 +100,14 @@
     var raw = input.value;
     var val = normalize ? normalize(raw) : raw.trim();
     if (!val) { input.focus(); return; }
-    getSettings(function (s) {
+    getSettings().then(function (s) {
       var key = which === 'domain' ? 'killDomains' : 'killAuthors';
       var list = s[key] || [];
       if (list.indexOf(val) === -1) list.push(val);
       var set = {};
       set[key] = list;
-      chrome.storage.sync.set(set, function () {
+      write(set).then(function (ok) {
+        if (!ok) return;
         input.value = '';
         renderKillList(s);
       });
@@ -100,7 +122,7 @@
     var toggle = document.getElementById('siteToggle');
     var sens = document.getElementById('sensitivity');
 
-    getSettings(function (s) {
+    getSettings().then(function (s) {
       var sites = s.enabledSites || {};
       if (key) {
         if (sites[key] === undefined) sites[key] = true;
@@ -117,10 +139,10 @@
       toggle.addEventListener('change', function () {
         if (!key) return;
         sites[key] = toggle.checked;
-        chrome.storage.sync.set({ enabledSites: sites });
+        write({ enabledSites: sites });
       });
       sens.addEventListener('change', function () {
-        chrome.storage.sync.set({ sensitivity: sens.value });
+        write({ sensitivity: sens.value });
       });
 
       document.getElementById('cullDomain').addEventListener('click', function () {
@@ -128,7 +150,8 @@
         var domains = s.killDomains || [];
         if (domains.indexOf(key) === -1) domains.push(key);
         sites[key] = false;
-        chrome.storage.sync.set({ killDomains: domains, enabledSites: sites }, function () {
+        write({ killDomains: domains, enabledSites: sites }).then(function (ok) {
+          if (!ok) return;
           toggle.checked = false;
           document.getElementById('stat').innerHTML =
             '<b>Domain culled.</b> Reload the tab to apply.';

@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "FeedCull — feed curation for the AI-slop era",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Hide low-effort AI content from HN, Reddit and the web. Your feed, your rules: killfiles, author/domain reputation, topic filters, optional heuristic flags.",
   "permissions": ["storage"],
   "host_permissions": [
