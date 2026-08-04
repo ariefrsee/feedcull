@@ -40,7 +40,8 @@ scripted path uses Chrome for Testing (CfT), which keeps it:
   src/content-core.js    settings + decision pipeline (killfile > heuristic)
   src/content-hn.js      Hacker News adapter
   src/content-reddit.js  Reddit adapter (new + old reddit)
-  src/popup.html/.js     per-site toggle, sensitivity, cull-domain
+  src/popup.html/.js     per-site toggle, sensitivity, KILLFILES (add/remove
+                         domains & authors right in the popup), reload-tab
   src/options.html/.js   killfiles (domains/authors), topic filters
   icons/                 generated (scripts/gen_icons.py)
   landing/index.html     marketing page + waitlist
