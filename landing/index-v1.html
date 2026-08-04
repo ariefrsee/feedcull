@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FeedCull — your feed, your rules</title>
+<style>
+  :root { --bg: #0d1117; --panel: #161b22; --border: #21262d; --text: #c9d1d9;
+          --head: #f0f6fc; --muted: #8b949e; --red: #e5484d; --blue: #58a6ff; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 16px/1.6 system-ui, -apple-system, sans-serif;
+         background: var(--bg); color: var(--text); }
+  nav { display: flex; justify-content: space-between; align-items: center;
+        padding: 18px 5%; border-bottom: 1px solid var(--border); }
+  .logo { font-weight: 700; color: var(--head); font-size: 18px; }
+  .logo span { color: var(--red); }
+  nav a { color: var(--muted); text-decoration: none; margin-left: 20px; }
+  nav a:hover { color: var(--head); }
+  header { text-align: center; padding: 90px 5% 60px; max-width: 780px; margin: 0 auto; }
+  h1 { color: var(--head); font-size: 44px; line-height: 1.15; margin: 0 0 18px; }
+  h1 span { color: var(--red); }
+  .sub { color: var(--muted); font-size: 19px; margin-bottom: 34px; }
+  .cta { display: inline-block; background: var(--red); color: #fff; padding: 14px 30px;
+         border-radius: 8px; text-decoration: none; font-weight: 600; }
+  .cta.ghost { background: transparent; border: 1px solid var(--border); color: var(--text);
+               margin-left: 10px; }
+  section { max-width: 860px; margin: 0 auto; padding: 50px 5%; }
+  h2 { color: var(--head); font-size: 26px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+          gap: 16px; margin-top: 24px; }
+  .card { background: var(--panel); border: 1px solid var(--border);
+          border-radius: 10px; padding: 20px; }
+  .card h3 { color: var(--head); margin: 0 0 8px; font-size: 16px; }
+  .card p { color: var(--muted); margin: 0; font-size: 14px; }
+  .why { background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
+         padding: 28px; margin-top: 24px; }
+  .why b { color: var(--head); }
+  form { display: flex; gap: 10px; max-width: 480px; margin: 24px auto 0; }
+  input[type=email] { flex: 1; background: var(--panel); border: 1px solid var(--border);
+                      color: var(--text); padding: 13px 16px; border-radius: 8px; font-size: 15px; }
+  form button { background: var(--blue); color: #0d1117; border: 0; padding: 13px 22px;
+                border-radius: 8px; font-weight: 700; cursor: pointer; }
+  #thanks { text-align: center; color: var(--blue); font-weight: 600; margin-top: 14px; }
+  footer { text-align: center; color: var(--muted); font-size: 13px;
+           padding: 40px 5%; border-top: 1px solid var(--border); }
+  .quiet { font-size: 12px; color: var(--muted); text-align: center; margin-top: 10px; }
+</style>
+</head>
+<body>
+  <nav>
+    <div class="logo">Feed<span>Cull</span></div>
+    <div><a href="#why">Why not a detector</a><a href="#features">Features</a><a href="#pricing">Pricing</a><a href="#waitlist">Waitlist</a></div>
+  </nav>
+
+  <header>
+    <h1>Your feed, <span>your rules.</span></h1>
+    <p class="sub">FeedCull curates HN, Reddit and the web for the AI-slop era —
+      killfiles, author &amp; domain reputation, and topic filters. No AI detection,
+      no false accusations. You hold the lever.</p>
+    <a class="cta" href="#waitlist">Join the waitlist</a>
+    <a class="cta ghost" href="#features">How it works</a>
+  </header>
+
+  <section id="why">
+    <h2>Why this exists</h2>
+    <p>When thousands of readers asked platforms for a way to filter AI-generated
+    articles, the answer was a policy debate. So readers started building their own
+    extensions and killfiles — the demand was already there. FeedCull is that
+    idea, done properly: a curation layer that lives in <em>your</em> browser,
+    not in a platform's moderation queue.</p>
+    <div class="why">
+      <b>Why it is NOT an "AI detector":</b> detection is unreliable, and false
+      accusations hurt real people. FeedCull never says "this is AI." It shows
+      you pattern signals and lets you decide — and it ships with the filters
+      that are 100% reliable: your killfiles, your topic rules.
+    </div>
+  </section>
+
+  <section id="features">
+    <h2>Features (v1)</h2>
+    <div class="grid">
+      <div class="card"><h3>Killfiles</h3><p>Ban domains and authors everywhere. Instant, exact, yours.</p></div>
+      <div class="card"><h3>Topic filters</h3><p>Hide entire topics from your feed — e.g. "AI" when you've had enough.</p></div>
+      <div class="card"><h3>Reputation signals</h3><p>Domain and author history, surfaced on every post.</p></div>
+      <div class="card"><h3>Heuristic flags</h3><p>Optional pattern scoring, transparent and overridable — never a verdict.</p></div>
+      <div class="card"><h3>Private by design</h3><p>Everything runs locally in your browser. Nothing is sent anywhere.</p></div>
+      <div class="card"><h3>Reveal &amp; override</h3><p>Every hidden post can be revealed. Your feed is never a black box.</p></div>
+    </div>
+  </section>
+
+  <section id="pricing">
+    <h2>Pricing</h2>
+    <p style="color:var(--muted); text-align:center;">Free forever. Pro when you want the heavy artillery.</p>
+    <div class="grid">
+      <div class="card">
+        <h3>Free</h3>
+        <p style="font-size:28px; color:var(--head); margin:6px 0;">$0</p>
+        <p>Killfiles, topic filters, local heuristic engine, HN + Reddit. Private by design, forever.</p>
+        <a class="cta ghost" href="#waitlist" style="display:block; text-align:center;">Join waitlist</a>
+      </div>
+      <div class="card">
+        <h3>Pro — monthly</h3>
+        <p style="font-size:28px; color:var(--head); margin:6px 0;">$4<span style="font-size:14px; color:var(--muted);">/mo</span></p>
+        <p>Article-text LLM-judge, cross-device sync, all sites, custom rules, early features.</p>
+        <a class="cta" href="#" id="buyMonthly" style="display:block; text-align:center;">Get Pro</a>
+      </div>
+      <div class="card">
+        <h3>Pro — lifetime</h3>
+        <p style="font-size:28px; color:var(--head); margin:6px 0;">$29<span style="font-size:14px; color:var(--muted);"> once</span></p>
+        <p>Everything in Pro, forever, one payment. The honest deal for early believers.</p>
+        <a class="cta" href="#" id="buyLifetime" style="display:block; text-align:center;">Get Pro</a>
+      </div>
+    </div>
+    <p class="quiet" id="checkoutNote"></p>
+  </section>
+
+  <section id="waitlist">
+    <h2>Early access</h2>
+    <p style="color:var(--muted); text-align:center;">v1 ships as a Chrome extension. Join the waitlist — the first 500 get <b style="color:var(--head);">Pro free forever</b>.</p>
+    <form id="wl">
+      <input type="email" id="email" placeholder="you@example.com" required>
+      <button type="submit">Notify me</button>
+    </form>
+    <div id="thanks"></div>
+    <p class="quiet">Form stores locally in this demo build; backend capture is wired in phase 2.</p>
+  </section>
+
+  <footer>FeedCull — a product of Omni-Corp OS. Built by agents, verified by humans.</footer>
+
+  <script>
+    // CHECKOUT: create a product at Lemon Squeezy / Gumroad / Paddle, then
+    // paste the link below. Until then, the buttons explain themselves.
+    var CHECKOUT_URL = ""; // e.g. "https://feedcull.gumroad.com/l/pro"
+    function wireBuy(id) {
+      var el = document.getElementById(id);
+      el.addEventListener("click", function (e) {
+        if (!CHECKOUT_URL) {
+          e.preventDefault();
+          document.getElementById("checkoutNote").textContent =
+            "Checkout goes live with the launch — join the waitlist and we'll email you the moment Pro is buyable.";
+        } else {
+          window.open(CHECKOUT_URL, "_blank");
+        }
+      });
+    }
+    wireBuy("buyMonthly");
+    wireBuy("buyLifetime");
+    document.getElementById("wl").addEventListener("submit", function (e) {
+      e.preventDefault();
+      var email = document.getElementById("email").value.trim();
+      var key = "feedcull_waitlist";
+      var list = [];
+      try { list = JSON.parse(localStorage.getItem(key) || "[]"); } catch (err) {}
+      if (list.indexOf(email) === -1) list.push(email);
+      localStorage.setItem(key, JSON.stringify(list));
+      document.getElementById("thanks").textContent =
+        "You're on the list (" + list.length + " signups). We'll email when v1 drops.";
+      this.reset();
+    });
+  </script>
+</body>
+</html>

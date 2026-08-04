@@ -4,159 +4,444 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>FeedCull — your feed, your rules</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230d1117'/%3E%3Cline x1='5' y1='5' x2='27' y2='27' stroke='%23e5484d' stroke-width='8' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-  :root { --bg: #0d1117; --panel: #161b22; --border: #21262d; --text: #c9d1d9;
-          --head: #f0f6fc; --muted: #8b949e; --red: #e5484d; --blue: #58a6ff; }
+  :root {
+    --bg: #0d1117;
+    --panel: #11161d;
+    --panel-2: #151b23;
+    --border: rgba(148, 163, 184, 0.14);
+    --border-strong: rgba(148, 163, 184, 0.24);
+    --text: #c9d1d9;
+    --head: #f0f6fc;
+    --muted: #8b949e;
+    --dim: #6e7681;
+    --red: #e5484d;
+    --red-soft: rgba(229, 72, 77, 0.12);
+    --green: #3fb950;
+    --green-soft: rgba(63, 185, 80, 0.12);
+    --blue: #58a6ff;
+    --font: 'Geist', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    --mono: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
   * { box-sizing: border-box; }
-  body { margin: 0; font: 16px/1.6 system-ui, -apple-system, sans-serif;
-         background: var(--bg); color: var(--text); }
-  nav { display: flex; justify-content: space-between; align-items: center;
-        padding: 18px 5%; border-bottom: 1px solid var(--border); }
-  .logo { font-weight: 700; color: var(--head); font-size: 18px; }
-  .logo span { color: var(--red); }
-  nav a { color: var(--muted); text-decoration: none; margin-left: 20px; }
-  nav a:hover { color: var(--head); }
-  header { text-align: center; padding: 90px 5% 60px; max-width: 780px; margin: 0 auto; }
-  h1 { color: var(--head); font-size: 44px; line-height: 1.15; margin: 0 0 18px; }
-  h1 span { color: var(--red); }
-  .sub { color: var(--muted); font-size: 19px; margin-bottom: 34px; }
-  .cta { display: inline-block; background: var(--red); color: #fff; padding: 14px 30px;
-         border-radius: 8px; text-decoration: none; font-weight: 600; }
-  .cta.ghost { background: transparent; border: 1px solid var(--border); color: var(--text);
-               margin-left: 10px; }
-  section { max-width: 860px; margin: 0 auto; padding: 50px 5%; }
-  h2 { color: var(--head); font-size: 26px; }
-  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-          gap: 16px; margin-top: 24px; }
-  .card { background: var(--panel); border: 1px solid var(--border);
-          border-radius: 10px; padding: 20px; }
-  .card h3 { color: var(--head); margin: 0 0 8px; font-size: 16px; }
-  .card p { color: var(--muted); margin: 0; font-size: 14px; }
-  .why { background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
-         padding: 28px; margin-top: 24px; }
-  .why b { color: var(--head); }
-  form { display: flex; gap: 10px; max-width: 480px; margin: 24px auto 0; }
-  input[type=email] { flex: 1; background: var(--panel); border: 1px solid var(--border);
-                      color: var(--text); padding: 13px 16px; border-radius: 8px; font-size: 15px; }
-  form button { background: var(--blue); color: #0d1117; border: 0; padding: 13px 22px;
-                border-radius: 8px; font-weight: 700; cursor: pointer; }
-  #thanks { text-align: center; color: var(--blue); font-weight: 600; margin-top: 14px; }
-  footer { text-align: center; color: var(--muted); font-size: 13px;
-           padding: 40px 5%; border-top: 1px solid var(--border); }
-  .quiet { font-size: 12px; color: var(--muted); text-align: center; margin-top: 10px; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+         font: 400 16px/1.6 var(--font); -webkit-font-smoothing: antialiased; }
+  ::selection { background: var(--red); color: #fff; }
+
+  /* ---------- nav ---------- */
+  nav { position: sticky; top: 0; z-index: 50; background: rgba(13, 17, 23, 0.92);
+        backdrop-filter: blur(8px); border-bottom: 1px solid var(--border); }
+  .nav-inner { max-width: 1080px; margin: 0 auto; padding: 14px 24px;
+               display: flex; align-items: center; justify-content: space-between; }
+  .logo { font-weight: 600; font-size: 17px; color: var(--head); letter-spacing: -0.02em; }
+  .logo em { font-style: normal; color: var(--red); }
+  .nav-links { display: flex; gap: 26px; align-items: center; }
+  .nav-links a { color: var(--muted); text-decoration: none; font-size: 14px;
+                 font-weight: 500; letter-spacing: 0.02em; transition: color .15s; }
+  .nav-links a:hover { color: var(--head); }
+  .nav-cta { display: inline-block; padding: 8px 18px; border-radius: 9999px;
+             background: var(--red); color: #fff; font-size: 14px; font-weight: 500;
+             text-decoration: none; transition: opacity .15s; }
+  .nav-cta:hover { opacity: 0.88; }
+
+  /* ---------- hero ---------- */
+  .hero { max-width: 1080px; margin: 0 auto; padding: 84px 24px 56px;
+          display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 56px;
+          align-items: center; }
+  .kicker { font-family: var(--mono); font-size: 12px; color: var(--dim);
+            letter-spacing: 0.08em; text-transform: uppercase; margin: 0 0 18px; }
+  .kicker b { color: var(--red); font-weight: 500; }
+  h1 { margin: 0 0 20px; font-size: 56px; line-height: 1.04; font-weight: 600;
+       letter-spacing: -0.03em; color: var(--head); text-wrap: balance; }
+  h1 .cull { color: var(--red); }
+  .sub { margin: 0 0 32px; font-size: 18px; line-height: 1.55; color: var(--muted);
+         max-width: 46ch; }
+  .hero-ctas { display: flex; gap: 12px; flex-wrap: wrap; }
+  .btn { display: inline-block; padding: 12px 24px; border-radius: 9999px;
+         font-size: 15px; font-weight: 500; text-decoration: none; transition: all .15s; }
+  .btn-primary { background: var(--red); color: #fff; }
+  .btn-primary:hover { opacity: 0.88; }
+  .btn-ghost { background: transparent; color: var(--text);
+               border: 1px solid var(--border-strong); }
+  .btn-ghost:hover { background: var(--panel-2); }
+  .hero-note { margin: 20px 0 0; font-size: 13px; color: var(--dim); font-family: var(--mono); }
+
+  /* ---------- feed mock ---------- */
+  .feed { background: var(--panel); border: 1px solid var(--border);
+          border-radius: 14px; overflow: hidden; }
+  .feed-head { display: flex; align-items: center; justify-content: space-between;
+               padding: 12px 16px; border-bottom: 1px solid var(--border);
+               font-family: var(--mono); font-size: 12px; color: var(--dim); }
+  .feed-head .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green);
+                    display: inline-block; margin-right: 7px; }
+  .feed-row { padding: 12px 16px; border-bottom: 1px solid var(--border);
+              display: grid; grid-template-columns: 34px 1fr; gap: 10px;
+              align-items: baseline; transition: opacity .4s, transform .4s; }
+  .feed-row:last-child { border-bottom: 0; }
+  .feed-rank { font-family: var(--mono); font-size: 12px; color: var(--dim); text-align: right; }
+  .feed-title { font-size: 14.5px; color: var(--head); line-height: 1.35; }
+  .feed-meta { margin-top: 4px; font-family: var(--mono); font-size: 11px; color: var(--dim); }
+  .feed-row.culled { opacity: 0.42; }
+  .feed-row.culled .feed-title { text-decoration: line-through;
+                                 text-decoration-color: var(--red); text-decoration-thickness: 2px; }
+  .feed-row.culled .feed-meta { color: var(--red); }
+  .feed-row .chip { font-family: var(--mono); font-size: 10px; padding: 2px 8px;
+                    border-radius: 9999px; letter-spacing: 0.04em; margin-left: 8px; }
+  .chip-culled { background: var(--red-soft); color: var(--red); }
+  .chip-kept { background: var(--green-soft); color: var(--green); }
+  .feed-cap { margin: 12px 4px 0; font-size: 12.5px; color: var(--dim); }
+
+  /* ---------- sections ---------- */
+  section { max-width: 1080px; margin: 0 auto; padding: 72px 24px; }
+  .sec-label { font-family: var(--mono); font-size: 12px; color: var(--red);
+               letter-spacing: 0.08em; text-transform: uppercase; margin: 0 0 14px; }
+  h2 { margin: 0 0 18px; font-size: 36px; line-height: 1.12; font-weight: 600;
+       letter-spacing: -0.025em; color: var(--head); text-wrap: balance; }
+  .lead { font-size: 17px; line-height: 1.6; color: var(--muted); max-width: 60ch; }
+
+  /* why-not-detector */
+  .why-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; margin-top: 28px; }
+  .why-grid p { margin: 0 0 16px; color: var(--text); font-size: 15.5px; line-height: 1.65; }
+  .why-grid p b { color: var(--head); font-weight: 500; }
+  .story { border: 1px solid var(--border); border-radius: 12px; padding: 20px 22px;
+           background: var(--panel); font-size: 14px; color: var(--muted); line-height: 1.65; }
+  .story b { color: var(--head); font-weight: 500; }
+  .story .mono { font-family: var(--mono); font-size: 12.5px; color: var(--text); }
+
+  /* pipeline */
+  .pipeline { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-top: 30px; }
+  .stage { border: 1px solid var(--border); border-radius: 10px; padding: 16px;
+           background: var(--panel); position: relative; }
+  .stage .n { font-family: var(--mono); font-size: 11px; color: var(--red); }
+  .stage h3 { margin: 8px 0 6px; font-size: 15px; font-weight: 500; color: var(--head); }
+  .stage p { margin: 0; font-size: 12.5px; line-height: 1.5; color: var(--muted); }
+  .stage .arrow { position: absolute; right: -11px; top: 50%; transform: translateY(-50%);
+                  color: var(--dim); font-size: 14px; z-index: 2; }
+  .stage:last-child .arrow { display: none; }
+  .stage.result { border-color: var(--red); }
+  .stage.result .n { color: var(--red); }
+
+  /* pricing */
+  .pricing-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 30px; align-items: start; }
+  .plan { border: 1px solid var(--border); border-radius: 14px; padding: 26px 26px 22px;
+          background: var(--panel); }
+  .plan.pro { border-color: var(--red); background: var(--panel-2); }
+  .plan-name { font-size: 13px; font-weight: 500; color: var(--muted); text-transform: uppercase;
+               letter-spacing: 0.06em; font-family: var(--mono); }
+  .plan.pro .plan-name { color: var(--red); }
+  .plan-price { margin: 12px 0 4px; font-size: 40px; font-weight: 600; color: var(--head);
+                letter-spacing: -0.03em; }
+  .plan-price small { font-size: 15px; color: var(--muted); font-weight: 400; letter-spacing: 0; }
+  .plan-tag { font-size: 13px; color: var(--dim); margin-bottom: 18px; }
+  .plan ul { list-style: none; margin: 0 0 22px; padding: 0; }
+  .plan li { padding: 9px 0; border-top: 1px solid var(--border); font-size: 14px;
+             display: flex; justify-content: space-between; gap: 12px; align-items: baseline; }
+  .plan li span { color: var(--text); }
+  .now { font-family: var(--mono); font-size: 10.5px; white-space: nowrap; padding: 2px 8px;
+         border-radius: 9999px; }
+  .now.avail { background: var(--green-soft); color: var(--green); }
+  .now.later { background: rgba(139, 148, 158, 0.14); color: var(--dim); }
+  .plan .btn { width: 100%; text-align: center; display: block; }
+  .hook { margin: 26px 0 0; border: 1px dashed var(--border-strong); border-radius: 12px;
+          padding: 16px 20px; font-size: 14px; color: var(--muted); text-align: center; }
+  .hook b { color: var(--head); font-weight: 500; }
+  .hook em { font-style: normal; color: var(--red); font-weight: 500; }
+
+  /* faq */
+  .faq { border-top: 1px solid var(--border); }
+  .faq details { border-bottom: 1px solid var(--border); padding: 20px 4px; }
+  .faq summary { cursor: pointer; font-size: 16.5px; font-weight: 500; color: var(--head);
+                 list-style: none; display: flex; justify-content: space-between; align-items: center; }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary::after { content: "+"; color: var(--dim); font-size: 20px; font-weight: 400; }
+  .faq details[open] summary::after { content: "–"; }
+  .faq details p { margin: 12px 0 4px; color: var(--muted); font-size: 15px; max-width: 70ch; }
+
+  /* waitlist */
+  .waitlist { text-align: center; }
+  .waitlist h2 { margin-bottom: 8px; }
+  .wl-form { display: flex; gap: 10px; max-width: 460px; margin: 26px auto 0; }
+  .wl-form input { flex: 1; background: var(--panel); border: 1px solid var(--border-strong);
+                   color: var(--text); padding: 13px 16px; border-radius: 9999px;
+                   font-size: 15px; font-family: var(--font); min-width: 0; }
+  .wl-form input:focus { outline: 2px solid var(--red); outline-offset: 1px; border-color: transparent; }
+  .wl-form button { background: var(--red); color: #fff; border: 0; padding: 13px 26px;
+                    border-radius: 9999px; font-size: 15px; font-weight: 500;
+                    cursor: pointer; font-family: var(--font); }
+  .wl-form button:hover { opacity: 0.88; }
+  #thanks { color: var(--green); font-weight: 500; margin-top: 16px; min-height: 24px; }
+  .quiet { font-size: 12px; color: var(--dim); margin-top: 12px; }
+
+  footer { border-top: 1px solid var(--border); padding: 34px 24px; text-align: center;
+           color: var(--dim); font-size: 13px; }
+  footer a { color: var(--muted); text-decoration: none; }
+  footer a:hover { color: var(--head); }
+
+  @media (max-width: 900px) {
+    .hero { grid-template-columns: 1fr; padding-top: 56px; }
+    h1 { font-size: 40px; }
+    .why-grid { grid-template-columns: 1fr; }
+    .pipeline { grid-template-columns: 1fr; }
+    .stage .arrow { display: none; }
+    .pricing-grid { grid-template-columns: 1fr; }
+    .nav-links a:not(.nav-cta) { display: none; }
+    section { padding: 56px 20px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .feed-row { transition: none; }
+  }
 </style>
 </head>
 <body>
-  <nav>
-    <div class="logo">Feed<span>Cull</span></div>
-    <div><a href="#why">Why not a detector</a><a href="#features">Features</a><a href="#pricing">Pricing</a><a href="#waitlist">Waitlist</a></div>
-  </nav>
 
-  <header>
-    <h1>Your feed, <span>your rules.</span></h1>
-    <p class="sub">FeedCull curates HN, Reddit and the web for the AI-slop era —
-      killfiles, author &amp; domain reputation, and topic filters. No AI detection,
-      no false accusations. You hold the lever.</p>
-    <a class="cta" href="#waitlist">Join the waitlist</a>
-    <a class="cta ghost" href="#features">How it works</a>
-  </header>
-
-  <section id="why">
-    <h2>Why this exists</h2>
-    <p>When thousands of readers asked platforms for a way to filter AI-generated
-    articles, the answer was a policy debate. So readers started building their own
-    extensions and killfiles — the demand was already there. FeedCull is that
-    idea, done properly: a curation layer that lives in <em>your</em> browser,
-    not in a platform's moderation queue.</p>
-    <div class="why">
-      <b>Why it is NOT an "AI detector":</b> detection is unreliable, and false
-      accusations hurt real people. FeedCull never says "this is AI." It shows
-      you pattern signals and lets you decide — and it ships with the filters
-      that are 100% reliable: your killfiles, your topic rules.
+<nav>
+  <div class="nav-inner">
+    <a class="logo" href="#top">Feed<em>Cull</em></a>
+    <div class="nav-links">
+      <a href="#why">Why not a detector</a>
+      <a href="#pipeline">How it decides</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#faq">FAQ</a>
+      <a class="nav-cta" href="#waitlist">Join waitlist</a>
     </div>
-  </section>
+  </div>
+</nav>
 
-  <section id="features">
-    <h2>Features (v1)</h2>
-    <div class="grid">
-      <div class="card"><h3>Killfiles</h3><p>Ban domains and authors everywhere. Instant, exact, yours.</p></div>
-      <div class="card"><h3>Topic filters</h3><p>Hide entire topics from your feed — e.g. "AI" when you've had enough.</p></div>
-      <div class="card"><h3>Reputation signals</h3><p>Domain and author history, surfaced on every post.</p></div>
-      <div class="card"><h3>Heuristic flags</h3><p>Optional pattern scoring, transparent and overridable — never a verdict.</p></div>
-      <div class="card"><h3>Private by design</h3><p>Everything runs locally in your browser. Nothing is sent anywhere.</p></div>
-      <div class="card"><h3>Reveal &amp; override</h3><p>Every hidden post can be revealed. Your feed is never a black box.</p></div>
+<header class="hero" id="top">
+  <div>
+    <p class="kicker">A browser extension · HN &amp; Reddit · <b>v0.1.2</b></p>
+    <h1>Your feed, <span class="cull">your rules.</span></h1>
+    <p class="sub">FeedCull curates Hacker News, Reddit and the web for the
+      AI-slop era — killfiles, author and domain reputation, topic filters,
+      and an optional heuristic scorer. No AI detection, no false
+      accusations. You hold the lever.</p>
+    <div class="hero-ctas">
+      <a class="btn btn-primary" href="#waitlist">Join the waitlist</a>
+      <a class="btn btn-ghost" href="#why">Why not an AI detector</a>
     </div>
-  </section>
+    <p class="hero-note">first 500 on the waitlist get Pro free forever</p>
+  </div>
 
-  <section id="pricing">
-    <h2>Pricing</h2>
-    <p style="color:var(--muted); text-align:center;">Free forever. Pro when you want the heavy artillery.</p>
-    <div class="grid">
-      <div class="card">
-        <h3>Free</h3>
-        <p style="font-size:28px; color:var(--head); margin:6px 0;">$0</p>
-        <p>Killfiles, topic filters, local heuristic engine, HN + Reddit. Private by design, forever.</p>
-        <a class="cta ghost" href="#waitlist" style="display:block; text-align:center;">Join waitlist</a>
+  <div>
+    <div class="feed" aria-label="FeedCull on Hacker News, live example">
+      <div class="feed-head"><span><span class="dot"></span>news.ycombinator.com</span><span>FeedCull active</span></div>
+      <div class="feed-row">
+        <span class="feed-rank">1</span>
+        <div><div class="feed-title">FFmpeg 9.0</div>
+          <div class="feed-meta">1852 pts · ffmpeg.org · by mfilion <span class="chip chip-kept">kept</span></div></div>
       </div>
-      <div class="card">
-        <h3>Pro — monthly</h3>
-        <p style="font-size:28px; color:var(--head); margin:6px 0;">$4<span style="font-size:14px; color:var(--muted);">/mo</span></p>
-        <p>Article-text LLM-judge, cross-device sync, all sites, custom rules, early features.</p>
-        <a class="cta" href="#" id="buyMonthly" style="display:block; text-align:center;">Get Pro</a>
+      <div class="feed-row">
+        <span class="feed-rank">2</span>
+        <div><div class="feed-title">Mini retirements: like a sabbatical, but much smaller</div>
+          <div class="feed-meta">634 pts · rafaelgrossmann.com <span class="chip chip-kept">kept</span></div></div>
       </div>
-      <div class="card">
-        <h3>Pro — lifetime</h3>
-        <p style="font-size:28px; color:var(--head); margin:6px 0;">$29<span style="font-size:14px; color:var(--muted);"> once</span></p>
-        <p>Everything in Pro, forever, one payment. The honest deal for early believers.</p>
-        <a class="cta" href="#" id="buyLifetime" style="display:block; text-align:center;">Get Pro</a>
+      <div class="feed-row culled">
+        <span class="feed-rank">3</span>
+        <div><div class="feed-title">AI-Generated Images Discourage Me from Reading Your Blog</div>
+          <div class="feed-meta">culled · topic: "ai" <span class="chip chip-culled">culled</span></div></div>
+      </div>
+      <div class="feed-row culled">
+        <span class="feed-rank">4</span>
+        <div><div class="feed-title">Why Large Language Models Fail at Tabular Prediction</div>
+          <div class="feed-meta">culled · topic: "llm" <span class="chip chip-culled">culled</span></div></div>
+      </div>
+      <div class="feed-row">
+        <span class="feed-rank">5</span>
+        <div><div class="feed-title">That time when I failed the Microsoft interview</div>
+          <div class="feed-meta">418 pts · by danielvaughan <span class="chip chip-kept">kept</span></div></div>
       </div>
     </div>
-    <p class="quiet" id="checkoutNote"></p>
-  </section>
+    <p class="feed-cap">Real titles from today's HN front page. You configure; it curates. Everything runs locally in your browser.</p>
+  </div>
+</header>
 
-  <section id="waitlist">
-    <h2>Early access</h2>
-    <p style="color:var(--muted); text-align:center;">v1 ships as a Chrome extension. Join the waitlist — the first 500 get <b style="color:var(--head);">Pro free forever</b>.</p>
-    <form id="wl">
-      <input type="email" id="email" placeholder="you@example.com" required>
-      <button type="submit">Notify me</button>
-    </form>
-    <div id="thanks"></div>
-    <p class="quiet">Form stores locally in this demo build; backend capture is wired in phase 2.</p>
-  </section>
+<section id="why">
+  <p class="sec-label">Why not a detector</p>
+  <h2>Nobody wants a verdict. <br>They want a lever.</h2>
+  <div class="why-grid">
+    <div>
+      <p>When the <b>"Ask HN: Add flag for AI-generated articles"</b> thread hit
+      1,100 points, the answer from platforms was a policy debate. Meanwhile
+      readers were already building their own killfiles and extensions. That
+      demand is what FeedCull is built on — the proper version of the
+      workaround.</p>
+      <p>AI detection is unreliable, and false accusations hurt real people.
+      So FeedCull <b>never says "this is AI."</b> It surfaces pattern signals,
+      and the decision is always yours — killfiles and topic filters are
+      exact, and the heuristic scorer is a knob you set, not a judge that
+      sets you.</p>
+      <p><b>Private by design:</b> no accounts, no tracking, no servers.
+      Everything runs locally in your browser. There is nothing to sell,
+      which is exactly the point.</p>
+    </div>
+    <div class="story">
+      <b>Built by its own test suite.</b> While developing the scorer, the
+      automated install test caught a substring bug: the keyword
+      <span class="mono">"ai"</span> was hiding <i>There Will Come Soft
+      Rains</i> — the <span class="mono">"ai"</span> hiding inside
+      <span class="mono">Rains</span> — and <i>"failed"</i> was getting culled
+      for the same reason. Word-boundary matching fixed both. No Rains were
+      culled. The test harness stays in the repo and runs on every change.
+    </div>
+  </div>
+</section>
 
-  <footer>FeedCull — a product of Omni-Corp OS. Built by agents, verified by humans.</footer>
+<section id="pipeline">
+  <p class="sec-label">How it decides</p>
+  <h2>One post, five rules, instant.</h2>
+  <p class="lead">Every headline runs through the same pipeline on page load.
+    The first match wins. Nothing is sent anywhere.</p>
+  <div class="pipeline">
+    <div class="stage"><span class="n">01</span><h3>Killfile</h3><p>Domains and authors you banned. Exact, instant, unconditional.</p><span class="arrow">→</span></div>
+    <div class="stage"><span class="n">02</span><h3>Topic filters</h3><p>Whole-word matches against your keywords — "ai", "gpt", "llm", anything.</p><span class="arrow">→</span></div>
+    <div class="stage"><span class="n">03</span><h3>Heuristic score</h3><p>Local pattern scoring: slop phrases, em-dash density, generic openers.</p><span class="arrow">→</span></div>
+    <div class="stage"><span class="n">04</span><h3>Sensitivity</h3><p>Low / Medium / High — the knob that decides how aggressive step 03 is.</p><span class="arrow">→</span></div>
+    <div class="stage result"><span class="n">05</span><h3>Keep or cull</h3><p>The post is shown or hidden in your view only. The page itself is untouched.</p></div>
+  </div>
+</section>
 
-  <script>
-    // CHECKOUT: create a product at Lemon Squeezy / Gumroad / Paddle, then
-    // paste the link below. Until then, the buttons explain themselves.
-    var CHECKOUT_URL = ""; // e.g. "https://feedcull.gumroad.com/l/pro"
-    function wireBuy(id) {
-      var el = document.getElementById(id);
-      el.addEventListener("click", function (e) {
-        if (!CHECKOUT_URL) {
-          e.preventDefault();
-          document.getElementById("checkoutNote").textContent =
-            "Checkout goes live with the launch — join the waitlist and we'll email you the moment Pro is buyable.";
-        } else {
-          window.open(CHECKOUT_URL, "_blank");
-        }
-      });
-    }
-    wireBuy("buyMonthly");
-    wireBuy("buyLifetime");
-    document.getElementById("wl").addEventListener("submit", function (e) {
-      e.preventDefault();
-      var email = document.getElementById("email").value.trim();
-      var key = "feedcull_waitlist";
-      var list = [];
-      try { list = JSON.parse(localStorage.getItem(key) || "[]"); } catch (err) {}
-      if (list.indexOf(email) === -1) list.push(email);
-      localStorage.setItem(key, JSON.stringify(list));
-      document.getElementById("thanks").textContent =
-        "You're on the list (" + list.length + " signups). We'll email when v1 drops.";
-      this.reset();
+<section id="pricing">
+  <p class="sec-label">Pricing</p>
+  <h2>Free forever. Pro when you want the heavy artillery.</h2>
+  <div class="pricing-grid">
+    <div class="plan">
+      <div class="plan-name">Free</div>
+      <div class="plan-price">$0 <small>forever</small></div>
+      <div class="plan-tag">The complete v1. Private, local, yours.</div>
+      <ul>
+        <li><span>Killfiles — domains &amp; authors</span><span class="now avail">now</span></li>
+        <li><span>Topic filters</span><span class="now avail">now</span></li>
+        <li><span>Local heuristic scorer (title-level)</span><span class="now avail">now</span></li>
+        <li><span>HN + Reddit</span><span class="now avail">now</span></li>
+        <li><span>Per-site toggle &amp; sensitivity</span><span class="now avail">now</span></li>
+        <li><span>Privacy: nothing leaves your machine</span><span class="now avail">now</span></li>
+      </ul>
+      <a class="btn btn-ghost" href="#waitlist">Join waitlist</a>
+    </div>
+    <div class="plan pro">
+      <div class="plan-name">Pro</div>
+      <div class="plan-price">$4 <small>/mo · or $29 once</small></div>
+      <div class="plan-tag">The upgrade that removes v1's biggest weakness.</div>
+      <ul>
+        <li><span>Everything in Free</span><span class="now avail">now</span></li>
+        <li><span>Article-text LLM-judge — scores the full article, not just the title</span><span class="now later">phase 2</span></li>
+        <li><span>Cross-device sync for your rules</span><span class="now later">phase 2</span></li>
+        <li><span>All sites, web-wide filtering</span><span class="now later">phase 2</span></li>
+        <li><span>Custom rules &amp; early access to new features</span><span class="now later">phase 2</span></li>
+      </ul>
+      <a class="btn btn-primary" href="#" id="buyLifetime">Get Pro — $29 lifetime</a>
+      <a class="btn btn-ghost" href="#" id="buyMonthly" style="margin-top:8px;">Get Pro — $4/mo</a>
+      <p class="quiet" id="checkoutNote"></p>
+    </div>
+  </div>
+  <div class="hook">The first <b>500</b> on the waitlist get <em>Pro free forever</em> — the $29 lifetime deal, on the house, for the people who believed first.</div>
+</section>
+
+<section id="faq">
+  <p class="sec-label">FAQ</p>
+  <h2>Straight answers.</h2>
+  <div class="faq">
+    <details open>
+      <summary>What's the difference between Free and Pro right now?</summary>
+      <p>Today, v0.1.2's Free and Pro are functionally identical — the Pro
+      features (article-text judging, sync, all sites) are phase-2 work that
+      isn't built yet. Buying Pro now is a pre-order: you lock in the price,
+      fund the build, and get first access when it ships. That's also why the
+      first 500 waitlist members get Pro free forever — early believers
+      shouldn't pay for what they're helping build.</p>
+    </details>
+    <details>
+      <summary>Is this an AI detector?</summary>
+      <p>No — deliberately. Detection is unreliable, and false accusations
+      hurt real people. FeedCull shows you pattern signals and hands you the
+      lever: killfiles and topic filters are exact, the heuristic scorer is a
+      sensitivity knob you control. It never issues a verdict.</p>
+    </details>
+    <details>
+      <summary>What data leaves my machine?</summary>
+      <p>None. No accounts, no tracking, no servers. Settings live in your
+      browser's storage, scoring runs locally, and there is no telemetry. The
+      only optional network call is the phase-2 Pro LLM-judge — and it will
+      be explicit, never implicit.</p>
+    </details>
+    <details>
+      <summary>Why load unpacked instead of the Chrome Web Store?</summary>
+      <p>Speed — the store review takes weeks and this shipped in a day. The
+      install is a 60-second "Load unpacked" from the repo zip; the store
+      listing follows once the Reddit adapter passes its live test. Same
+      extension either way.</p>
+    </details>
+  </div>
+</section>
+
+<section class="waitlist" id="waitlist">
+  <p class="sec-label">Early access</p>
+  <h2>First 500 get Pro free forever.</h2>
+  <p class="lead" style="margin:0 auto;">Leave an email. When v1 ships you get the
+    extension and a lifetime Pro license — no card, no catch.</p>
+  <form class="wl-form" id="wl">
+    <input type="email" id="email" placeholder="you@example.com" required>
+    <button type="submit">Notify me</button>
+  </form>
+  <div id="thanks"></div>
+  <p class="quiet">Form stores locally in this build; backend capture is wired in phase 2.</p>
+</section>
+
+<footer>
+  FeedCull — a product of Omni-Corp OS · <a href="https://github.com/ariefrsee/feedcull" target="_blank" rel="noopener">source on GitHub</a> · built by agents, verified by humans
+</footer>
+
+<script>
+  /* CHECKOUT: create a product at Lemon Squeezy / Gumroad / Paddle, then
+     paste the links below. Until then, the buttons explain themselves. */
+  var CHECKOUT_URL_MONTHLY = ""; // e.g. "https://feedcull.gumroad.com/l/pro-monthly"
+  var CHECKOUT_URL_LIFETIME = ""; // e.g. "https://feedcull.gumroad.com/l/pro-lifetime"
+
+  function wireBuy(id, url) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener("click", function (e) {
+      if (!url) {
+        e.preventDefault();
+        document.getElementById("checkoutNote").textContent =
+          "Checkout goes live with the launch — join the waitlist and we'll email you the moment Pro is buyable.";
+      } else {
+        window.open(url, "_blank");
+      }
     });
-  </script>
+  }
+  wireBuy("buyMonthly", CHECKOUT_URL_MONTHLY);
+  wireBuy("buyLifetime", CHECKOUT_URL_LIFETIME);
+
+  /* waitlist (local storage in this build; real capture in phase 2) */
+  document.getElementById("wl").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var email = document.getElementById("email").value.trim();
+    var key = "feedcull_waitlist";
+    var list = [];
+    try { list = JSON.parse(localStorage.getItem(key) || "[]"); } catch (err) {}
+    if (list.indexOf(email) === -1) list.push(email);
+    localStorage.setItem(key, JSON.stringify(list));
+    document.getElementById("thanks").textContent =
+      "You're on the list (#" + list.length + "). Pro free forever is locked in for the first 500.";
+    this.reset();
+  });
+
+  /* hero feed: cull rows in sequence on load (respects reduced motion) */
+  if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    var culled = document.querySelectorAll(".feed-row.culled");
+    culled.forEach(function (row, i) {
+      row.style.opacity = "1";
+      row.style.transform = "none";
+      setTimeout(function () { row.style.opacity = "0.42"; row.style.transform = "none"; }, 900 + i * 550);
+    });
+  }
+</script>
 </body>
 </html>
