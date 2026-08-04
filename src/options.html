@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>FeedCull — Options</title>
+<style>
+  body { font: 14px/1.6 system-ui, sans-serif; background: #0d1117;
+         color: #c9d1d9; max-width: 640px; margin: 40px auto; padding: 0 20px; }
+  h1 { color: #f0f6fc; } h1 span { color: #e5484d; }
+  h2 { color: #f0f6fc; font-size: 15px; margin: 28px 0 8px; }
+  p.hint { color: #8b949e; font-size: 12px; margin: 4px 0 8px; }
+  textarea { width: 100%; min-height: 90px; background: #161b22; color: #c9d1d9;
+             border: 1px solid #30363d; border-radius: 6px; padding: 8px;
+             font: 13px/1.5 ui-monospace, monospace; box-sizing: border-box; }
+  select { background: #161b22; color: #c9d1d9; border: 1px solid #30363d;
+           border-radius: 4px; padding: 4px 8px; }
+  button { background: #e5484d; color: #fff; border: 0; border-radius: 6px;
+           padding: 10px 18px; font-size: 14px; cursor: pointer; margin-top: 16px; }
+  #status { color: #3fb950; margin-left: 12px; font-size: 13px; }
+  .card { background: #161b22; border: 1px solid #21262d; border-radius: 8px;
+          padding: 14px 16px; margin-top: 10px; }
+</style>
+</head>
+<body>
+  <h1>Feed<span>Cull</span> — Options</h1>
+  <p class="hint">Your rules, stored locally in your browser. Nothing leaves your machine in v1.</p>
+
+  <div class="card">
+    <h2>Global sensitivity</h2>
+    <select id="sensitivity">
+      <option value="low">Low — only the most obvious slop</option>
+      <option value="med" selected>Medium (default)</option>
+      <option value="high">High — aggressive filtering</option>
+    </select>
+    <p class="hint">Flagged posts are hidden but the count is shown; culled posts are removed from view. You can always change this.</p>
+  </div>
+
+  <div class="card">
+    <h2>Killfile — domains</h2>
+    <textarea id="killDomains" placeholder="example.com"></textarea>
+    <p class="hint">One domain per line. Every post from these domains is culled, everywhere.</p>
+  </div>
+
+  <div class="card">
+    <h2>Killfile — authors / usernames</h2>
+    <textarea id="killAuthors" placeholder="username"></textarea>
+    <p class="hint">One username per line (exact match).</p>
+  </div>
+
+  <div class="card">
+    <h2>Topic filters</h2>
+    <textarea id="topicKeywords" placeholder="ai, gpt, llm"></textarea>
+    <p class="hint">One keyword per line. Posts whose title contains the keyword are culled. The "hide AI-related articles" crowd asked for exactly this.</p>
+  </div>
+
+  <button id="save">Save</button><span id="status"></span>
+  <script src="options.js"></script>
+</body>
+</html>
