@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FeedCull — Privacy Policy</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230d1117'/%3E%3Cline x1='5' y1='5' x2='27' y2='27' stroke='%23e5484d' stroke-width='8' stroke-linecap='round'/%3E%3C/svg%3E">
+<style>
+  :root { --bg:#0d1117; --panel:#11161d; --border:rgba(148,163,184,.14);
+          --text:#c9d1d9; --head:#f0f6fc; --muted:#8b949e; --dim:#6e7681;
+          --red:#e5484d; --font:'Geist',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+          --mono:'Geist Mono',ui-monospace,SFMono-Regular,Menlo,monospace; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+         font: 400 16px/1.65 var(--font); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 56px 24px 80px; }
+  a { color: #58a6ff; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .back { font-family: var(--mono); font-size: 13px; color: var(--dim); }
+  h1 { color: var(--head); font-size: 34px; letter-spacing: -0.02em; margin: 24px 0 6px; }
+  h1 em { font-style: normal; color: var(--red); }
+  .updated { font-family: var(--mono); font-size: 12px; color: var(--dim); margin-bottom: 40px; }
+  h2 { color: var(--head); font-size: 20px; margin: 36px 0 10px; letter-spacing: -0.01em; }
+  p { margin: 0 0 14px; }
+  ul { margin: 0 0 14px; padding-left: 22px; }
+  li { margin-bottom: 8px; }
+  .decl { border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px;
+         background: var(--panel); margin: 20px 0; }
+  .decl h3 { color: var(--head); font-size: 14px; margin: 0 0 10px; font-family: var(--mono); }
+  .decl li { font-size: 14px; }
+  code { font-family: var(--mono); font-size: 13px; color: var(--text);
+         background: var(--panel); border: 1px solid var(--border);
+         border-radius: 4px; padding: 1px 6px; }
+  .muted { color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">← FeedCull</a>
+  <h1>Privacy <em>Policy</em></h1>
+  <p class="updated">Effective 2026-08-04 · Version 1.0 · One page, plain language, no fine print.</p>
+
+  <p class="muted">FeedCull is built on a simple premise: a feed curator that
+  watches you is a contradiction in terms. This policy is the contract that
+  enforces that premise.</p>
+
+  <h2>1. The extension</h2>
+  <p>FeedCull is a browser extension that hides content you don't want to see
+  on Hacker News and Reddit. Everything it does — reading headlines, matching
+  your killfiles and topic filters, running the heuristic scorer, hiding
+  rows — happens <b>locally in your browser</b>. The extension has no
+  servers, no accounts, no analytics, and no telemetry.</p>
+
+  <h2>2. What the extension stores</h2>
+  <ul>
+    <li><b>Your settings</b> (killfiles, topic filters, sensitivity, per-site
+    toggles) are stored in your browser's <code>chrome.storage.sync</code>.
+    If you have Chrome sync enabled, Chrome may mirror that storage through
+    your own Google account as part of Chrome's normal sync behaviour — that
+    is Google's infrastructure and governed by Google's own privacy terms.
+    FeedCull never receives it.</li>
+    <li><b>A daily counter</b> (posts culled today) is stored in
+    <code>chrome.storage.local</code> on your machine only.</li>
+    <li><b>Nothing else.</b> No browsing history, no page content, no
+    keystrokes, no cookies, no network requests.</li>
+  </ul>
+
+  <h2>3. The optional Pro LLM-judge (phase 2)</h2>
+  <p>Pro's article-text scoring will send the text of an article you
+  explicitly ask to be scored to a language-model provider. This will be an
+  explicit, per-request action — never automatic, never background — and the
+  text is not stored by us. The free tier has no such feature at all.</p>
+
+  <h2>4. This website</h2>
+  <ul>
+    <li><b>Waitlist form:</b> when you join the waitlist, your email address
+    and a timestamp are sent to our list service and saved. That's the whole
+    dataset — no name, no location, no tracking. It's used to notify you
+    about FeedCull and nothing else. It is never sold.</li>
+    <li><b>Fonts:</b> this site loads its typeface from Google Fonts. Your
+    browser requests that font from Google, so Google sees your IP address
+    per its own privacy policy — standard for the web. No font request is
+    made by the extension itself.</li>
+    <li><b>No cookies, no analytics, no ads.</b></li>
+  </ul>
+
+  <h2>5. Children</h2>
+  <p>FeedCull is not directed at children under 13, and we do not knowingly
+  collect personal information from them. If you believe a child has
+  provided us information, contact us and we will delete it.</p>
+
+  <h2>6. Changes</h2>
+  <p>If this policy changes, the version and date above will be updated.
+  Because FeedCull collects almost nothing, meaningful changes are unlikely —
+  and if one ever happens, it will be announced, not buried.</p>
+
+  <h2>7. Contact</h2>
+  <p>Questions, concerns, or deletion requests: open an issue on
+  <a href="https://github.com/ariefrsee/feedcull" target="_blank" rel="noopener">GitHub</a>.</p>
+
+  <div class="decl">
+    <h3>Chrome Web Store privacy declaration (copy-paste for the listing)</h3>
+    <ul>
+      <li><b>Personal information collected:</b> None.</li>
+      <li><b>User data transmitted:</b> None. All processing is local.</li>
+      <li><b>Third-party data disclosure:</b> None.</li>
+      <li><b>Advertising / tracking:</b> None.</li>
+      <li><b>Data storage:</b> Settings in <code>chrome.storage.sync</code>
+      (subject to Chrome sync); daily counter in
+      <code>chrome.storage.local</code>. No data leaves the browser.</li>
+    </ul>
+  </div>
+</div>
+</body>
+</html>

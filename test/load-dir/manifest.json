@@ -1,0 +1,31 @@
+{
+  "manifest_version": 3,
+  "name": "FeedCull — test build (localhost fixture)",
+  "version": "0.1.3",
+  "description": "Test-only manifest: same extension, plus localhost host permission so adapters can be exercised against local DOM fixtures when live sites block automation.",
+  "permissions": ["storage"],
+  "host_permissions": [
+    "http://127.0.0.1/*",
+    "http://old.localhost/*",
+    "*://news.ycombinator.com/*",
+    "*://*.reddit.com/*",
+    "*://old.reddit.com/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["http://127.0.0.1/*", "http://old.localhost/*"],
+      "js": ["src/heuristics.js", "src/content-core.js", "src/content-reddit.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["*://news.ycombinator.com/*"],
+      "js": ["src/heuristics.js", "src/content-core.js", "src/content-hn.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["*://*.reddit.com/*"],
+      "js": ["src/heuristics.js", "src/content-core.js", "src/content-reddit.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

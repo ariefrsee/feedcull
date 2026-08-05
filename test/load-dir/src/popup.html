@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>FeedCull</title>
+<style>
+  body { width: 280px; font: 13px/1.5 system-ui, sans-serif; margin: 0;
+         background: #0d1117; color: #c9d1d9; }
+  header { padding: 12px 14px; border-bottom: 1px solid #21262d;
+           display: flex; justify-content: space-between; align-items: center; }
+  h1 { margin: 0; font-size: 15px; color: #f0f6fc; }
+  h1 span { color: #e5484d; }
+  .tag { font-size: 11px; color: #8b949e; }
+  main { padding: 12px 14px; }
+  .row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  label { color: #8b949e; }
+  select { background: #161b22; color: #c9d1d9; border: 1px solid #30363d;
+           border-radius: 4px; padding: 3px 6px; }
+  h2 { margin: 14px 0 8px; font-size: 12px; text-transform: uppercase;
+       letter-spacing: .5px; color: #8b949e; }
+  .addrow { display: flex; gap: 6px; margin-bottom: 6px; }
+  input[type=text] { flex: 1; background: #161b22; border: 1px solid #30363d;
+                     color: #c9d1d9; border-radius: 4px; padding: 6px 8px;
+                     font-size: 12px; min-width: 0; }
+  button { background: #21262d; color: #c9d1d9; border: 0; border-radius: 4px;
+           padding: 6px 10px; cursor: pointer; font-size: 12px; }
+  button.primary { background: #e5484d; color: #fff; }
+  button.rm { background: none; color: #8b949e; padding: 0 5px; font-size: 12px; }
+  button.rm:hover { color: #e5484d; }
+  ul { list-style: none; margin: 6px 0; padding: 0; max-height: 130px; overflow-y: auto; }
+  li { display: flex; align-items: center; gap: 6px; padding: 4px 6px;
+       background: #161b22; border: 1px solid #21262d; border-radius: 4px;
+       margin-bottom: 4px; font-size: 12px; }
+  li .kind { color: #8b949e; font-size: 10px; text-transform: uppercase; }
+  li .val { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  li.empty { color: #8b949e; font-style: italic; border-style: dashed; }
+  .hint { color: #8b949e; font-size: 11px; margin: 6px 0; }
+  .stat { text-align: center; color: #8b949e; margin: 10px 0 8px; }
+  .stat b { color: #f0f6fc; }
+  .full { width: 100%; margin-top: 4px; }
+</style>
+</head>
+<body>
+  <header><h1>Feed<span>Cull</span></h1><span class="tag">v0.1.2</span></header>
+  <main>
+    <div class="row">
+      <label for="siteToggle">Enabled on this site</label>
+      <input type="checkbox" id="siteToggle">
+    </div>
+    <div class="row">
+      <label for="sensitivity">Sensitivity</label>
+      <select id="sensitivity">
+        <option value="low">Low (only obvious)</option>
+        <option value="med" selected>Medium</option>
+        <option value="high">High (aggressive)</option>
+      </select>
+    </div>
+
+    <h2>Killfile — right here</h2>
+    <div class="addrow">
+      <input type="text" id="newDomain" placeholder="Add a domain, e.g. example.com">
+      <button class="primary" id="addDomain">+ Add</button>
+    </div>
+    <div class="addrow">
+      <input type="text" id="newAuthor" placeholder="Add an author / username">
+      <button id="addAuthor">+ Add</button>
+    </div>
+    <button class="full" id="cullDomain">Cull this site's domain</button>
+    <ul id="killList"></ul>
+    <p class="hint">Killfile changes apply on the next page load.</p>
+    <button class="full" id="reloadTab">Reload this tab now</button>
+
+    <div class="stat" id="stat">Culled today: <b>0</b></div>
+    <button class="full" id="openOptions">Options — topic filters &amp; more</button>
+  </main>
+  <script src="popup.js"></script>
+</body>
+</html>

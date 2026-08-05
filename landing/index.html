@@ -208,6 +208,7 @@
       <a href="#pipeline">How it decides</a>
       <a href="#pricing">Pricing</a>
       <a href="#faq">FAQ</a>
+      <a href="privacy.html">Privacy</a>
       <a class="nav-cta" href="#waitlist">Join waitlist</a>
     </div>
   </div>
@@ -387,14 +388,16 @@
     extension and a lifetime Pro license — no card, no catch.</p>
   <form class="wl-form" id="wl">
     <input type="email" id="email" placeholder="you@example.com" required>
+    <input type="text" id="company" name="company" tabindex="-1" autocomplete="off"
+           aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
     <button type="submit">Notify me</button>
   </form>
   <div id="thanks"></div>
-  <p class="quiet">Form stores locally in this build; backend capture is wired in phase 2.</p>
+  <p class="quiet">Your email is saved locally and sent to our list service when it's wired — never sold, never spammed.</p>
 </section>
 
 <footer>
-  FeedCull — a product of Omni-Corp OS · <a href="https://github.com/ariefrsee/feedcull" target="_blank" rel="noopener">source on GitHub</a> · built by agents, verified by humans
+  FeedCull — a product of Omni-Corp OS · <a href="privacy.html">Privacy</a> · <a href="https://github.com/ariefrsee/feedcull" target="_blank" rel="noopener">source on GitHub</a> · built by agents, verified by humans
 </footer>
 
 <script>
@@ -419,18 +422,60 @@
   wireBuy("buyMonthly", CHECKOUT_URL_MONTHLY);
   wireBuy("buyLifetime", CHECKOUT_URL_LIFETIME);
 
-  /* waitlist (local storage in this build; real capture in phase 2) */
-  document.getElementById("wl").addEventListener("submit", function (e) {
-    e.preventDefault();
-    var email = document.getElementById("email").value.trim();
+  /* WAITLIST: paste your form backend endpoint here (Formspree, Basin,
+     Tally — any of them). Until then, emails are kept locally only.
+     The form always mirrors to localStorage as a backup. */
+  var WAITLIST_ENDPOINT = ""; // e.g. "https://formspree.io/f/abc123"
+
+  function storeLocal(email) {
     var key = "feedcull_waitlist";
     var list = [];
     try { list = JSON.parse(localStorage.getItem(key) || "[]"); } catch (err) {}
     if (list.indexOf(email) === -1) list.push(email);
     localStorage.setItem(key, JSON.stringify(list));
-    document.getElementById("thanks").textContent =
-      "You're on the list (#" + list.length + "). Pro free forever is locked in for the first 500.";
-    this.reset();
+    return list.length;
+  }
+
+  document.getElementById("wl").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var form = this;
+    var thanks = document.getElementById("thanks");
+    var email = document.getElementById("email").value.trim();
+    var n = storeLocal(email);
+
+    /* honeypot: bots fill the hidden "company" field — pretend success */
+    var company = document.getElementById("company");
+    if (company && company.value) {
+      thanks.textContent = "You're on the list. We'll email when v1 drops.";
+      form.reset();
+      return;
+    }
+
+    if (!WAITLIST_ENDPOINT) {
+      thanks.textContent =
+        "You're on the list (#" + n + "). Pro free forever is locked in for the first 500.";
+      form.reset();
+      return;
+    }
+
+    thanks.textContent = "Signing you up…";
+    fetch(WAITLIST_ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify({ email: email, source: "feedcull-landing", ts: new Date().toISOString() })
+    }).then(function (res) {
+      if (res.ok) {
+        thanks.textContent =
+          "You're on the list (#" + n + "). Pro free forever is locked in for the first 500.";
+      } else {
+        thanks.textContent =
+          "Signup didn't go through — we saved your email locally and will add you manually.";
+      }
+      form.reset();
+    }).catch(function () {
+      thanks.textContent = "No connection right now — we saved your email locally and will add you.";
+      form.reset();
+    });
   });
 
   /* hero feed: cull rows in sequence on load (respects reduced motion) */

@@ -41,6 +41,14 @@ scripted path uses Chrome for Testing (CfT), which keeps it:
   node test/install-test.js        injection -> filters -> culling on HN
   node test/popup-test.js          killfile add/remove in the real popup
   node test/killfile-e2e-test.js   killfile entry -> posts culled after reload
+  node test/reddit-test.js         reddit adapters via DOM fixtures (both branches):
+     FC_EXT_DIR=test/load-dir node test/reddit-test.js \
+       https://old.reddit.com:8891/test/fixtures/old-reddit.html
+     (CfT must run with --host-resolver-rules="MAP old.reddit.com 127.0.0.1, MAP www.reddit.com 127.0.0.1"
+      --ignore-certificate-errors, plus the local HTTPS server from /tmp/https-serve.js.
+      Live reddit blocks automation, so fixtures stand in for its DOM.)
+     If you change src/, re-sync the test build: cp -r src test/load-dir/src
+  node test/waitlist-test.js       landing waitlist: endpoint POST, honeypot, fallback
 
 ## Structure
   manifest.json          MV3 manifest
